@@ -28,6 +28,79 @@ module RuboCop
 
       alias rewrite process # Legacy
 
+      # TODO: move into plugin? https://github.com/rubocop-hq/rubocop-extension-generator
+      #   https://github.com/rubocop-hq/rubocop/blob/6e270b5a1073121419d8d6353887187b7cfb17f5/docs/modules/ROOT/pages/extensions.adoc
+      #
+      # like {rewrite}, but interactive
+      #
+      # Actually, needs to handle a lot
+      #
+      # $ b exe/rubocop -a example.rb
+      # Inspecting 1 file
+      # C
+      #
+      # Offenses:
+      #
+      # > example.rb:1:1  Style/EmptyMethod: Put empty method definitions on a single line.
+      #
+      # -    def foo
+      # +    def foo; end
+      # -    end
+      #
+      # Stage this hunk [y/n/a/d/K/j/J/e/?]?
+      #
+      # example.rb:1:1: C: [Corrected|Skipped] Style/EmptyMethod: Put empty method definitions on a single line.
+
+      def rewrite_interactive
+        source     = @source_buffer.source
+
+        # TODO: deal with infinite loop checker
+        # lib/rubocop/runner.rb:284
+
+        chunks = []
+        last_end = 0
+        @action_root.ordered_replacements.each do |range, replacement|
+          last_end = range.end_pos
+          old = source[range.begin_pos...last_end]
+          new = source[last_end...range.begin_pos] << replacement
+
+          choice = nil
+          until %w(y yes n no).include? choice
+            # TODO: offense name, file and line number
+            # TODO: git style diff?
+            puts "Correction xx at file:no"
+            puts
+            puts "== Before ==" # TODO: red
+            puts
+            puts "```"
+            puts old
+            puts "```"
+            puts
+            puts "== After ==" # TODO: green
+            puts
+            puts "```"
+            puts new
+            puts "```"
+            puts
+            print "(y/n): "
+
+            choice = $stdin.gets.chomp
+
+            puts "invalid choice"
+          end
+
+          case choice
+          when "y", "yes"
+            chunks << new
+          else
+            chunks << old
+          end
+        end
+
+        chunks << source[last_end...source.length]
+        chunks.join
+      end
+
       # Removes `size` characters prior to the source range.
       #
       # @param [Parser::Source::Range, Rubocop::AST::Node] range or node

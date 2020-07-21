@@ -49,7 +49,7 @@ module RuboCop
       end
 
       def autocorrect?
-        @options[:auto_correct]
+        @options[:auto_correct] || @options[:auto_correct_interactive]
       end
 
       def debug?
@@ -175,7 +175,13 @@ module RuboCop
       def autocorrect_report(report)
         corrector = collate_corrections(report)
 
-        corrector.rewrite unless corrector.empty?
+        unless corrector.empty?
+          if @options[:auto_correct_interactive]
+            corrector.rewrite_interactive
+          else
+            corrector.rewrite
+          end
+        end
       end
 
       def collate_corrections(report)

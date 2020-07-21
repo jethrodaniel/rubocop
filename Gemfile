@@ -29,3 +29,5 @@ gem 'rubocop-ast', path: local_ast if Dir.exist? local_ast
 
 local_gemfile = File.expand_path('Gemfile.local', __dir__)
 eval_gemfile local_gemfile if File.exist?(local_gemfile)
+
+gem "pry-byebug", "~> 3.9"

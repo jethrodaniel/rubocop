@@ -181,6 +181,16 @@ module RuboCop
       option(opts, '-A', '--auto-correct-all') do
         @options[:auto_correct] = true
       end
+      option(opts, '-i', '--auto-correct-interactive') do
+        @options[:safe_auto_correct] =
+          @options[:auto_correct] =
+          @options[:auto_correct_interactive] = true
+      end
+      option(opts, '-I', '--auto-correct-interactive-all') do
+        @options[:auto_correct] =
+          @options[:auto_correct_interactive_all] =
+          @options[:auto_correct_interactive] = true
+      end
       option(opts, '--disable-pending-cops')
       option(opts, '--enable-pending-cops')
       option(opts, '--ignore-disable-comments')
@@ -474,6 +484,8 @@ module RuboCop
       auto_correct:                     'Auto-correct offenses (only when it\'s safe).',
       safe_auto_correct:                '(same, deprecated)',
       auto_correct_all:                 'Auto-correct offenses (safe and unsafe)',
+      auto_correct_interactive:         'Interactively correct offenses (only when it\'s safe).',
+      auto_correct_interactive_all:     'Interactively correct offenses (safe and unsafe).',
       fix_layout:                       'Run only layout cops, with auto-correct on.',
       color:                            'Force color output on or off.',
       version:                          'Display version.',
